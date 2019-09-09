@@ -1,11 +1,11 @@
 const fs = require('fs');
 const AzureUploader = require('@flui/klaytn-uploader').AzureUploader;
-const ERC721Card = artifacts.require('ERC721Card');
+const MARFCard = artifacts.require('MARFCard');
 
 module.exports = function(deployer) {
-	deployer.deploy(ERC721Card).then(() => {
+	deployer.deploy(MARFCard).then(() => {
 		const data = JSON.stringify({
-			contractAddress: ERC721Card.address
+			contractAddress: MARFCard.address
 		});
 
 		if (!fs.existsSync('./artifacts')) {
@@ -14,17 +14,17 @@ module.exports = function(deployer) {
 		}
 
 		fs.writeFileSync('./artifacts/address.json', data);
-		console.log(`\n    Create file of contract address to json: ${ERC721Card.address}`);
+		console.log(`\n    Create file of contract address to json: ${MARFCard.address}`);
 
-		const abi = JSON.stringify(ERC721Card._json.abi);
+		const abi = JSON.stringify(MARFCard._json.abi);
 		fs.writeFileSync('./artifacts/abi.json', abi);
-		console.log(`\n    Create file of abi file to json: ${ERC721Card.address}`);
+		console.log(`\n    Create file of abi file to json: ${MARFCard.address}`);
 
 		const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
 		const accessKey = process.env.AZURE_STORAGE_ACCOUNT_ACCESS_KEY;
 		const uploader = new AzureUploader(accountName, accessKey);
 
 		const containerName = process.env.AZURE_STORAGE_CONTRACT_CONTAINER_NAME;
-		uploader.uploadArtifacts(ERC721Card._json.contractName, 'artifacts', containerName);
+		uploader.uploadArtifacts(MARFCard._json.contractName, 'artifacts', containerName);
 	});
 };
