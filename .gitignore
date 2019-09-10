@@ -67,3 +67,5 @@ changed.json
 .secret
 
 artifacts/
+
+migrations/
