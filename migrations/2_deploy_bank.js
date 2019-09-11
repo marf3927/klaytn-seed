@@ -1,12 +1,12 @@
 const fs = require('fs');
 const yaml = require('js-yaml');
-const AzureUploader = require('@MARF/klaytn-uploader').AzureUploader;
-const MARFBank = artifacts.require('MARFBank');
+const AzureUploader = require('@flui/klaytn-uploader').AzureUploader;
+const FLUIBank = artifacts.require('FLUIBank');
 
 module.exports = function(deployer) {
-	deployer.deploy(MARFBank).then(() => {
+	deployer.deploy(FLUIBank).then(() => {
 		const data = JSON.stringify({
-			contractAddress: MARFBank.address
+			contractAddress: FLUIBank.address
 		});
 
 		if (!fs.existsSync('./artifacts')) {
@@ -15,11 +15,11 @@ module.exports = function(deployer) {
 		}
 
 		fs.writeFileSync('./artifacts/address.json', data);
-		console.log(`\n    Create file of contract address to json: ${MARFBank.address}`);
+		console.log(`\n    Create file of contract address to json: ${FLUIBank.address}`);
 
-		const abi = JSON.stringify(MARFBank._json.abi);
+		const abi = JSON.stringify(FLUIBank._json.abi);
 		fs.writeFileSync('./artifacts/abi.json', abi);
-		console.log(`\n    Create file of abi file to json: ${MARFBank.address}`);
+		console.log(`\n    Create file of abi file to json: ${FLUIBank.address}`);
 
 		const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
 		const accessKey = process.env.AZURE_STORAGE_ACCOUNT_ACCESS_KEY;
@@ -27,13 +27,13 @@ module.exports = function(deployer) {
 
 		const containerName = process.env.AZURE_STORAGE_CONTRACT_CONTAINER_NAME;
 		uploader
-			.uploadArtifacts(MARFBank._json.contractName, 'artifacts', containerName)
+			.uploadArtifacts(FLUIBank._json.contractName, 'artifacts', containerName)
 			.then(results => {
 				const [abiResult, addressResult] = results;
 
 				const envYaml = {
-					CONTRACT_ABI_JSON: abiResult.url.trim(),
-					CONTRACT_ADDRESS_JSON: addressResult.url.trim()
+					CONTRACT_ABI_JSON: decodeURIComponent(abiResult.url.trim()),
+					CONTRACT_ADDRESS_JSON: decodeURIComponent(addressResult.url.trim())
 				};
 
 				const doc = yaml.safeDump(envYaml, {
